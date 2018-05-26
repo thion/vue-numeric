@@ -132,9 +132,13 @@ export default {
      * v-model value.
      */
     value: {
-      type: [Number, String],
-      default: 0,
-      required: true
+      default: '',
+      required: true,
+      validator: (value) => {
+        return value === null ||
+               typeof value === 'number' ||
+               typeof value === 'string';
+      }
     },
 
     /**
@@ -298,6 +302,17 @@ export default {
     onChangeHandler (e) {
       this.$emit('change', e)
     },
+    
+    /**
+     * Test if a value is null, undefined,
+     * or an empty string
+     * @param {Any} value
+     */
+    isNull (val) {
+      if (val === undefined || val === null || val === '') { return true; }
+      return false;
+    },
+
     /**
      * Handle blur event.
      * @param {Object} e
@@ -313,7 +328,7 @@ export default {
      */
     onFocusHandler (e) {
       this.$emit('focus', e)
-      if (this.valueNumber === 0) {
+      if (this.valueNumber === 0 || this.valueNumber === null) {
         this.amount = null
       } else {
         this.amount = accounting.formatMoney(this.valueNumber, {
@@ -349,9 +364,11 @@ export default {
      * @param {Number} value
      */
     update (value) {
-      const fixedValue = accounting.toFixed(value, this.precision)
-      const output = this.outputType.toLowerCase() === 'string' ? fixedValue : Number(fixedValue)
-      this.$emit('input', output)
+      if (value !== null) {
+        const fixedValue = accounting.toFixed(value, this.precision)
+        const output = this.outputType.toLowerCase() === 'string' ? fixedValue : Number(fixedValue)
+        this.$emit('input', output)
+      }
     },
 
     /**
@@ -360,6 +377,8 @@ export default {
      * @return {String}
      */
     format (value) {
+      // if (value === '' || value === null) { return null; }
+      if (this.isNull(value)) { return null; }
       return accounting.formatMoney(value, {
         symbol: this.currency,
         format: this.symbolPosition,
@@ -376,6 +395,7 @@ export default {
      */
     unformat (value) {
       const toUnformat = typeof value === 'string' && value === '' ? this.emptyValue : value
+      if (toUnformat === null) { return null; }
       return accounting.unformat(toUnformat, this.decimalSeparatorSymbol)
     }
   }
