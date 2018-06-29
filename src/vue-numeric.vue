@@ -134,6 +134,7 @@ export default {
     value: {
       default: '',
       required: true,
+      type: [String, Number],
       validator: (value) => {
         return value === null ||
                typeof value === 'number' ||
