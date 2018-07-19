@@ -5,9 +5,7 @@
     v-model="amount"
     :placeholder="placeholder"
     type="tel"
-    @blur="onBlurHandler"
-    @input="onInputHandler"
-    @focus="onFocusHandler"
+    v-on="inputListeners"
   >
   <span
     v-else
@@ -201,6 +199,21 @@ export default {
     },
 
     /**
+     * Define listeners to attach to the input
+     */
+    inputListeners () {
+      var vm = this;
+      return Object.assign({},
+        this.$listeners,
+        {
+          blur: vm.onBlurHandler,
+          input: vm.onInputHandler,
+          focus: vm.onFocusHandler,
+        }
+      );
+    },
+
+    /**
      * Define thousand separator based on separator props.
      * @return {String} '.' or ','
      */
@@ -353,7 +366,7 @@ export default {
       var output;
 
       if (value !== null) {
-        const fixedValue = accounting.toFixed(value, this.precision)
+      const fixedValue = accounting.toFixed(value, this.precision)
         output = this.outputType.toLowerCase() === 'string' ? fixedValue : Number(fixedValue)
       } else {
         output = null;
