@@ -3,8 +3,7 @@
     v-if="!readOnly"
     ref="numeric"
     v-model="amount"
-    v-if="!readOnly"
-    :disabled='disabled'
+    :disabled="disabled
     v-on="inputListeners"
   >
   <span
